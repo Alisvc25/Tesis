@@ -1,10 +1,10 @@
-import mongoose, { Schema, model } from 'mongoose'
+import { Schema, model } from 'mongoose'
 import bcrypt from 'bcryptjs'
 
 const docenteSchema = new Schema({
     nombre: {
         type: String,
-        require: true,
+        required: true,
         trim: true
     },
     apellido: {
@@ -14,8 +14,8 @@ const docenteSchema = new Schema({
     },
     direccion: {
         type: String,
-        required: true,
-        trim: true
+        trim: true,
+        default: null
     },
     celular: {
         type: String,
@@ -40,10 +40,6 @@ const docenteSchema = new Schema({
         type: Boolean,
         default: true
     },
-    token: {
-        type: String,
-        default: null
-    },
     confirmEmail: {
         type: Boolean,
         default: false
@@ -56,25 +52,10 @@ const docenteSchema = new Schema({
     timestamps: true
 });
 
-// Método para cifrar el password 
-docenteSchema.methods.encrypPassword = async function(password){
-    const salt = await bcrypt.genSalt(10)
-    const passwordEncryp = await bcrypt.hash(password,salt)
-    return passwordEncryp
-}
-
-
 // Método para verificar si el password ingresado es el mismo de la BDD
 docenteSchema.methods.matchPassword = async function(password){
     const response = await bcrypt.compare(password,this.password)
     return response
-}
-
-
-// Método para crear un token 
-docenteSchema.methods.crearToken = function(){
-    const tokenGenerado = this.token = Math.random().toString(36).slice(2)
-    return tokenGenerado
 }
 
 export default model('Docente', docenteSchema);

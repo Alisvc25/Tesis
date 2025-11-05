@@ -1,9 +1,10 @@
 import Administrador from "../models/Administrador.js"
-import { sendMailToRegister, sendMailToRecoveryPassword } from "../config/nodemailler.js"
+import Docente from "../models/Docente.js"
+import Estudiante from "../models/Estudiante.js"
+import { sendMailToOwner, sendMailToRegister, sendMailToRecoveryPassword } from "../config/nodemailler.js"
 import { crearTokenJWT } from "../middlewares/JWT.js"
 import mongoose from "mongoose"
-
-//hola
+import bcrypt from "bcryptjs"
 
 const registro = async (req,res)=>{
     const {email,password} = req.body
@@ -24,8 +25,65 @@ const registro = async (req,res)=>{
     await nuevoAdministrador.save()
     //4
     res.status(200).json({msg:"Revisa tu correo electrónico para confirmar tu cuenta"})
-
 }
+
+const registrarDocente = async (req, res) => {
+    const { nombre, apellido, email, materias } = req.body;
+
+    if (Object.values(req.body).includes("")) 
+        return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
+
+    const docenteExiste = await Docente.findOne({ email });
+    if (docenteExiste)
+        return res.status(400).json({ msg: "El email ya se encuentra registrado para un docente" });
+
+    const passwordTemporal = Math.random().toString(36).slice(-8);
+    const passwordEncriptado = await bcrypt.hash(passwordTemporal, 10);
+
+    const nuevoDocente = new Docente({
+        nombre,
+        apellido,
+        email,
+        materias,
+        password: passwordEncriptado,
+        rol: "docente",
+        confirmEmail: true
+    });
+
+    await nuevoDocente.save();
+    await sendMailToOwner(email, passwordTemporal);
+
+    res.status(201).json({ msg: "Docente registrado correctamente y correo enviado" });
+};
+
+const registrarEstudiante = async (req, res) => {
+    const { nombre, apellido, email, curso } = req.body;
+
+    if (Object.values(req.body).includes("")) 
+        return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
+
+    const estudianteExiste = await Estudiante.findOne({ email });
+    if (estudianteExiste)
+        return res.status(400).json({ msg: "El email ya se encuentra registrado para un estudiante" });
+
+    const passwordTemporal = Math.random().toString(36).slice(-8);
+    const passwordEncriptado = await bcrypt.hash(passwordTemporal, 10);
+
+    const nuevoEstudiante = new Estudiante({
+        nombre,
+        apellido,
+        email,
+        curso,
+        password: passwordEncriptado,
+        rol: "estudiante",
+        confirmEmail: true
+    });
+
+    await nuevoEstudiante.save();
+    await sendMailToOwner(email, passwordTemporal);
+
+    res.status(201).json({ msg: "Estudiante registrado correctamente y correo enviado" });
+};
 
 const confirmarMail = async (req,res)=>{
     //1
@@ -92,7 +150,6 @@ const crearNuevoPassword = async (req,res)=>{
 
     //4
     res.status(200).json({msg: "Felicitaciones, ya puedes iniciar sesion con tu nuevo password"})
-
 }
 
 const login = async(req,res)=>{
@@ -109,7 +166,6 @@ const login = async(req,res)=>{
         return res.status(404).json({msg:"Lo sentimos, el usuario no se encuentra registrado"})
     
     const verificarPassword = await administradorBDD.matchPassword(password)
-
 
     if(!verificarPassword) 
         return res.status(401).json({msg:"Lo sentimos, el password no es el correcto"})
@@ -172,6 +228,8 @@ const actualizarPassword = async (req,res)=>{
 
 export {
     registro,
+    registrarDocente,
+    registrarEstudiante,
     confirmarMail,
     recuperarPassword,
     comprobarTokenPasword,
