@@ -28,7 +28,8 @@ const registro = async (req,res)=>{
 }
 
 const registrarDocente = async (req, res) => {
-    const { nombre, apellido, email, materias } = req.body;
+    const { nombre, apellido, direccion, cedula, celular, 
+        email, materias } = req.body;
 
     if (Object.values(req.body).includes("")) 
         return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
@@ -43,6 +44,9 @@ const registrarDocente = async (req, res) => {
     const nuevoDocente = new Docente({
         nombre,
         apellido,
+        direccion,
+        cedula,
+        celular,
         email,
         materias,
         password: passwordEncriptado,
@@ -53,14 +57,15 @@ const registrarDocente = async (req, res) => {
     await nuevoDocente.save();
     await sendMailToOwner(email, passwordTemporal);
 
-    res.status(201).json({ msg: "Docente registrado correctamente y correo enviado" });
+    res.status(201).json({ msg: "Docente registrado correctamente y revise su correo electronico " });
 };
 
 const registrarEstudiante = async (req, res) => {
-    const { nombre, apellido, email, curso } = req.body;
+    const { nombre, apellido, cedula, fechaNacimiento, nacionalidad, direccion,
+        celular, email, curso } = req.body;
 
     if (Object.values(req.body).includes("")) 
-        return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
+        return res.status(400).json({ msg: "Lo sentimos, debes completar todos los campos" });
 
     const estudianteExiste = await Estudiante.findOne({ email });
     if (estudianteExiste)
@@ -72,6 +77,11 @@ const registrarEstudiante = async (req, res) => {
     const nuevoEstudiante = new Estudiante({
         nombre,
         apellido,
+        cedula,
+        fechaNacimiento,
+        nacionalidad,
+        direccion,
+        celular,
         email,
         curso,
         password: passwordEncriptado,
@@ -104,13 +114,18 @@ const confirmarMail = async (req,res)=>{
 
 const recuperarPassword = async(req,res)=>{
     const {email} = req.body
-    if (Object.values(req.body).includes("")) return res.status(404).json({msg:"Lo sentimos, debes llenar todos los campos"})
+    if (Object.values(req.body).includes("")) 
+        return res.status(404).json({msg:"Lo sentimos, debes llenar todos los campos"})
+
     const administradorBDD = await Administrador.findOne({email})
-    if(!administradorBDD) return res.status(404).json({msg:"Lo sentimos, el usuario no se encuentra registrado"})
+    if(!administradorBDD) 
+        return res.status(404).json({msg:"Lo sentimos, el usuario no se encuentra registrado"})
+
     const token = administradorBDD.crearToken()
     administradorBDD.token=token
     await sendMailToRecoveryPassword(email,token)
     await administradorBDD.save()
+
     res.status(200).json({msg:"Revisa tu correo electrónico para reestablecer tu cuenta"})
 }
 
@@ -218,13 +233,20 @@ const perfil =(req,res)=>{
 
 const actualizarPassword = async (req,res)=>{
     const administradorBDD = await Administrador.findById(req.administradorBDD._id)
-    if(!administradorBDD) return res.status(404).json({msg:`Lo sentimos, no existe el administrador ${id}`})
+    if(!administradorBDD) 
+        return res.status(404).json({msg:`Lo sentimos, no existe el administrador ${id}`})
+
     const verificarPassword = await administradorBDD.matchPassword(req.body.passwordactual)
-    if(!verificarPassword) return res.status(404).json({msg:"Lo sentimos, el password actual no es el correcto"})
+    if(!verificarPassword) 
+        return res.status(404).json({msg:"Lo sentimos, el password actual no es el correcto"})
+
     administradorBDD.password = await administradorBDD.encrypPassword(req.body.passwordnuevo)
     await administradorBDD.save()
+
     res.status(200).json({msg:"Password actualizado correctamente"})
 }
+
+
 
 export {
     registro,

@@ -67,13 +67,13 @@ app.use(fileUpload({
 app.use('/api', routerAdministrador);
 
 // Rutas para Director
-app.use('/api',routerEstudiante);
+app.use('/apiE',routerEstudiante);
 
 // Rutas para deportes
-app.use('/api',routerDocente);
+app.use('/apiD',routerDocente);
 
 //Ruta para calificaciones
-app.use('/api', routerCalificacion);
+app.use('/apiC', routerCalificacion);
 
 
 // Rutas 

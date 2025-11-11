@@ -3,7 +3,7 @@ import Calificacion from "../models/Calificacion.js"
 import { crearTokenJWT } from "../middlewares/JWT.js"
 import mongoose from "mongoose"
 
-
+/*
 const registrarDocente = async (req, res) => {
     const { email, password } = req.body;
     if (Object.values(req.body).includes(""))
@@ -18,6 +18,7 @@ const registrarDocente = async (req, res) => {
 
     res.status(200).json({ msg: "Docente registrado correctamente" });
 };
+*/
 
 const loginDocente = async (req, res) => {
     const { email, password } = req.body;
@@ -49,6 +50,7 @@ const perfilDocente = (req, res) => {
     res.status(200).json(datosPerfil);
 };
 
+/*
 const actualizarPerfil = async (req, res) => {
     const { id } = req.params;
     const { nombre, apellido, direccion, celular, email, materias } = req.body;
@@ -74,6 +76,7 @@ const actualizarPerfil = async (req, res) => {
     await docenteBDD.save();
     res.status(200).json(docenteBDD);
 };
+*/
 
 const actualizarPassword = async (req, res) => {
     const docenteBDD = await Docente.findById(req.docenteBDD._id);
@@ -89,15 +92,25 @@ const actualizarPassword = async (req, res) => {
 
 const crearCalificacion = async (req, res) => {
     try {
-        const { estudiante, docente, materia, componentes } = req.body;
+        const { estudiante, docente, materia, parcial1, parcial2, parcial3 } = req.body;
 
-        if (!estudiante || !docente || !materia || !componentes || componentes.length === 0)
+        if (!estudiante || !docente || !materia)
             return res.status(400).json({ msg: "Todos los campos son obligatorios" });
 
-        const nueva = new Calificacion({ estudiante, docente, materia, componentes });
-        await nueva.save();
+        if (!parcial1 && !parcial2 && !parcial3)
+            return res.status(400).json({ msg: "Debe enviar al menos un parcial" });
 
-        res.status(200).json({ msg: "Calificación registrada", nueva });
+        const nueva = new Calificacion({
+            estudiante,
+            docente,
+            materia,
+            parcial1: parcial1 ?? undefined,
+            parcial2: parcial2 ?? undefined,
+            parcial3: parcial3 ?? undefined
+        });
+
+        await nueva.save();
+        res.status(201).json({ msg: "Calificación registrada", nueva });
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: "Error al crear calificación" });
@@ -107,16 +120,19 @@ const crearCalificacion = async (req, res) => {
 const actualizarCalificacion = async (req, res) => {
     try {
         const { id } = req.params;
-        const { componentes } = req.body;
+        const { parcial1, parcial2, parcial3 } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).json({ msg: "ID inválido" });
 
         const calificacion = await Calificacion.findById(id);
         if (!calificacion) return res.status(404).json({ msg: "Calificación no encontrada" });
 
-        calificacion.componentes = componentes;
-        await calificacion.save();
+        // reasignar solo los parciales enviados
+        calificacion.parcial1 = parcial1 ? { ...calificacion.parcial1.toObject?.(), ...parcial1 } : calificacion.parcial1;
+        calificacion.parcial2 = parcial2 ? { ...calificacion.parcial2.toObject?.(), ...parcial2 } : calificacion.parcial2;
+        calificacion.parcial3 = parcial3 ? { ...calificacion.parcial3.toObject?.(), ...parcial3 } : calificacion.parcial3;
 
+        await calificacion.save();
         res.status(200).json({ msg: "Calificación actualizada", calificacion });
     } catch (error) {
         console.error(error);
@@ -134,10 +150,10 @@ const listarCalificaciones = async (req, res) => {
 
 
 export {
-    registrarDocente,
+    //registrarDocente,
     loginDocente,
     perfilDocente,
-    actualizarPerfil,
+    //actualizarPerfil,
     actualizarPassword,
     crearCalificacion,
     actualizarCalificacion,

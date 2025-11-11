@@ -17,6 +17,12 @@ const docenteSchema = new Schema({
         trim: true,
         default: null
     },
+    cedula: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true
+    },
     celular: {
         type: String,
         trim: true,
@@ -52,6 +58,13 @@ const docenteSchema = new Schema({
     timestamps: true
 });
 
+// Método para cifrar el password del Docente
+docenteSchema.methods.encrypPassword = async function(password){
+    const salt = await bcrypt.genSalt(10)
+    const passwordEncryp = await bcrypt.hash(password,salt)
+    return passwordEncryp
+}
+
 // Método para verificar si el password ingresado es el mismo de la BDD
 docenteSchema.methods.matchPassword = async function(password){
     const response = await bcrypt.compare(password,this.password)
@@ -59,3 +72,4 @@ docenteSchema.methods.matchPassword = async function(password){
 }
 
 export default model('Docente', docenteSchema);
+

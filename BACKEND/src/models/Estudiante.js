@@ -12,6 +12,21 @@ const estudianteSchema = new Schema({
         required: true,
         trim: true
     },
+    cedula: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true
+    },
+    fechaNacimiento: {
+        type: Date,
+        required: true
+    },
+    nacionalidad: {
+        type: String,
+        trim: true,
+        default: null
+    },
     direccion: {
         type: String,
         trim: true,
