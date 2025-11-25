@@ -21,7 +21,7 @@ const sendMailToRegister = (userMail, token) => {
         <h2>¡Registro exitoso! 🎓</h2>
         <p>Su cuenta ha sido creada correctamente por la administración de la Unidad Educativa Intercultural Bilingüe “Tránsito Amaguaña”.</p>
         <p>Haga clic en el siguiente enlace para activar su cuenta e iniciar sesión:</p>
-        <a href="${process.env.URL_BACKEND}confirm/${token}">Activar cuenta</a>
+        <a href="${process.env.URL_FRONTEND}confirm/${token}">Activar cuenta</a>
         <hr>
         <footer>Este mensaje fue generado automáticamente. No responda a este correo.</footer>
     `
@@ -43,7 +43,7 @@ const sendMailToRecoveryPassword = async (userMail, token) => {
 
         <h2>Restablecimiento de contraseña </h2>
         <p>Haga clic en el siguiente enlace para crear una nueva contraseña:</p>
-        <a href=${process.env.URL_BACKEND}reset/${token}>Restablecer contraseña</a>
+        <a href=${process.env.URL_FRONTEND}reset/${token}>Restablecer contraseña</a>
         <hr>
         <footer>Este mensaje fue generado automáticamente. No responda a este correo.</footer>
     `
@@ -62,7 +62,7 @@ const sendMailToOwner = async (userMail, password) => {
             <p>Tu cuenta ha sido creada por la dirección de la institución.</p>
             <p><b>Usuario:</b> ${userMail}</p>
             <p><b>Contraseña temporal:</b> ${password}</p>
-            <a href="${process.env.URL_BACKEND}login">Iniciar sesión</a>
+            <a href="${process.env.URL_FRONTEND}login">Iniciar sesión</a>
             <hr>
             <footer>Unidad Educativa Intercultural Bilingüe “Tránsito Amaguaña”</footer>
         `
