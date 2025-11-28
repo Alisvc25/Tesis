@@ -13,8 +13,6 @@ import routerDocente from './routers/docente_routes.js';
 import routerCalificacion from './routers/calificacion_routes.js';
 import session from 'express-session';
 
-const URL_FRONTEND = process.env.URL_FRONTEND || 'http://localhost:5173';
-
 dotenv.config();
 console.log('SESSION_SECRET:', process.env.SESSION_SECRET);
 
@@ -22,9 +20,12 @@ console.log('SESSION_SECRET:', process.env.SESSION_SECRET);
 // Inicializaciones
 const app = express();
 
+const FRONTEND_URL = process.env.FRONTEND_URL || process.env.URL_FRONTEND || 'http://localhost:5173';
+console.log('FRONTEND_URL:', FRONTEND_URL);
+
 // Configurar sesiones
 app.use(cors({
-    origin: URL_FRONTEND,
+    origin: FRONTEND_URL,
     credentials: true,
 }));
 
@@ -34,12 +35,10 @@ app.use(session({
     saveUninitialized: false
 }));
 
-
 //module.exports = app;
 
 // Configuraciones 
 app.use(cors()); // Permitir solicitudes desde cualquier origen
-
 
 // Middlewares 
 app.use(express.json());
@@ -75,12 +74,10 @@ app.use('/apiD', routerDocente);
 //Ruta para calificaciones
 app.use('/apiC', routerCalificacion);
 
-
 // Rutas 
 app.get('/', (req, res) => {
     res.send("Server on");
 });
-
 
 // Manejo de una ruta que no sea encontrada
 app.use((req, res) => res.status(404).send("Endpoint no encontrado - 404"));
