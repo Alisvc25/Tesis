@@ -25,7 +25,8 @@ console.log('FRONTEND_URL:', FRONTEND_URL);
 
 // Configurar sesiones
 app.use(cors({
-    origin: FRONTEND_URL,
+    //origin: FRONTEND_URL,
+    origin: true,
     credentials: true,
 }));
 
