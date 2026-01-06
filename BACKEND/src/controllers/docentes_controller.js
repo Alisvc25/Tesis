@@ -92,7 +92,14 @@ const actualizarPassword = async (req, res) => {
 
 const crearCalificacion = async (req, res) => {
     try {
-        const { estudiante, docente, materia, parcial1, parcial2, parcial3 } = req.body;
+        const { estudiante, materia, parcial1, parcial2, parcial3 } = req.body;
+        const docente = req.docenteBDD._id;
+
+        const docenteBDD = await Docente.findById(docente);
+
+        if (!docenteBDD.materias.includes(materia)) {
+            return res.status(403).json({ msg: "Materia no asignada al docente" });
+        }
 
         if (!estudiante || !docente || !materia)
             return res.status(400).json({ msg: "Todos los campos son obligatorios" });

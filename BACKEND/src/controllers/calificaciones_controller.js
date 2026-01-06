@@ -34,7 +34,8 @@ const obtenerCalificaciones = async (req, res) => {
 };
 
 const listarCalificaciones = async (req, res) => {
-    const calificaciones = await Calificacion.find()
+    const { id } = req.params;
+    const calificaciones = await Calificacion.find({ docente: id })
         .populate("estudiante", "nombre apellido curso")
         .populate("docente", "nombre apellido materias");
     res.status(200).json(calificaciones);

@@ -66,10 +66,10 @@ app.use(fileUpload({
 // Rutas para administradores
 app.use('/administrador', routerAdministrador);
 
-// Rutas para Director
+// Rutas para Estudiantes
 app.use('/apiE', routerEstudiante);
 
-// Rutas para deportes
+// Rutas para docentes
 app.use('/apiD', routerDocente);
 
 //Ruta para calificaciones

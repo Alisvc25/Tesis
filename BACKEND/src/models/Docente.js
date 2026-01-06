@@ -40,7 +40,7 @@ const docenteSchema = new Schema({
     },
     materias: [{
         type: String,
-        trim: true,
+        required: true,
     }],
     status: {
         type: Boolean,
