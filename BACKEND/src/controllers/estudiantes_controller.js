@@ -34,7 +34,7 @@ const listarCalificaciones = async (req, res) => {
         // calculo del promedio general
         if (calificaciones.length === 0) return res.status(200).json({ calificaciones: [], promedioGeneral: 0 });
 
-        const sumaPromedios = calificaciones.reduce((s, c) => s + (c.promedio || 0), 0);
+        const sumaPromedios = calificaciones.reduce((s, c) => s + (c.promedioFinal || 0), 0);
         const promedioGeneral = Number((sumaPromedios / calificaciones.length).toFixed(2));
 
         res.status(200).json({ calificaciones, promedioGeneral });

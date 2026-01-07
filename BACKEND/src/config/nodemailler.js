@@ -206,7 +206,7 @@ const sendMailToOwner = async (userMail, password) => {
             <h1>Bienvenido/a al Sistema Académico</h1>
             <p>Su cuenta ha sido creada por la dirección de la institución.</p>
             <p><b>Usuario:</b> ${userMail}</p>
-            <p><b>Contraseña definitiva:</b> ${password}</p>
+            <p><b>Contraseña:</b> ${password}</p>
             <p>Puede iniciar sesión usando el siguiente enlace:</p>
             <a href="${process.env.FRONTEND_URL}login">Iniciar sesión</a>
             <hr>
