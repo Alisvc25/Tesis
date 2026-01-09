@@ -14,7 +14,7 @@ router.put("/actualizarpassword/:id", verificarTokenJWT, actualizarPassword);
 router.post("/calificacion", verificarTokenJWT, crearCalificacion);
 router.put("/calificacion/:id", verificarTokenJWT, actualizarCalificacion);
 router.delete("/calificacion/:id", verificarTokenJWT, eliminarCalificaciones);
-router.get("/calificaciones/:id", verificarTokenJWT, listarCalificaciones);
+router.get("/calificacion/:id", verificarTokenJWT, listarCalificaciones);
 
 
 export default router
