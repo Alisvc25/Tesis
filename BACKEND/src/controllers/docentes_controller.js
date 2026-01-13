@@ -60,6 +60,30 @@ const comprobarTokenPasword = async (req, res) => {
     res.status(200).json({ msg: "Token confirmado, ya puedes crear tu nuevo password" })
 }
 
+const crearNuevoPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password, confirmpassword } = req.body;
+
+    if (!password || !confirmpassword) {
+        return res.status(400).json({ msg: "Debes llenar todos los campos" });
+    }
+
+    if (password !== confirmpassword) {
+        return res.status(400).json({ msg: "Los passwords no coinciden" });
+    }
+
+    const docenteBDD = await Docente.findOne({ token });
+    if (!docenteBDD || !docenteBDD.token) {
+        return res.status(404).json({ msg: "Token inválido o ya utilizado" });
+    }
+
+    docenteBDD.password = await docenteBDD.encrypPassword(password);
+    docenteBDD.token = null;
+    await docenteBDD.save();
+
+    return res.status(200).json({ msg: "Password actualizado correctamente" });
+};
+
 const crearCalificacion = async (req, res) => {
     try {
         const { estudiante, materia, parcial1, parcial2, parcial3 } = req.body;
@@ -154,6 +178,7 @@ export {
     perfil,
     recuperarPassword,
     comprobarTokenPasword,
+    crearNuevoPassword,
     crearCalificacion,
     actualizarCalificacion,
     eliminarCalificaciones,

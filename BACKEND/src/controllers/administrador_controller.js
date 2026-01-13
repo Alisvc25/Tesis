@@ -219,6 +219,7 @@ const recuperarPassword = async (req, res) => {
         return res.status(404).json({ msg: "Lo sentimos, el usuario no se encuentra registrado" })
 
     const token = administradorBDD.crearToken()
+
     administradorBDD.token = token
     await sendMailToRecoveryPassword(email, token)
     await administradorBDD.save()
@@ -229,10 +230,39 @@ const recuperarPassword = async (req, res) => {
 const comprobarTokenPasword = async (req, res) => {
     const { token } = req.params
     const administradorBDD = await Administrador.findOne({ token })
-    if (administradorBDD?.token !== req.params.token) return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" })
+
+    if (administradorBDD?.token !== req.params.token) 
+        return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" })
+    
     await administradorBDD.save()
+
     res.status(200).json({ msg: "Token confirmado, ya puedes crear tu nuevo password" })
 }
+
+const crearNuevoPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password, confirmpassword } = req.body;
+
+    if (!password || !confirmpassword) {
+        return res.status(400).json({ msg: "Debes llenar todos los campos" });
+    }
+
+    if (password !== confirmpassword) {
+        return res.status(400).json({ msg: "Los passwords no coinciden" });
+    }
+
+    const administradorBDD = await Administrador.findOne({ token });
+    if (!administradorBDD || !administradorBDD.token) {
+        return res.status(404).json({ msg: "Token inválido o ya utilizado" });
+    }
+
+    administradorBDD.password = await administradorBDD.encrypPassword(password);
+    administradorBDD.token = null;
+    await administradorBDD.save();
+
+    return res.status(200).json({ msg: "Password actualizado correctamente" });
+};
+
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -271,6 +301,7 @@ export {
     confirmarMail,
     recuperarPassword,
     comprobarTokenPasword,
+    crearNuevoPassword,
     login,
     registrarDocente,
     listarDocentes,
