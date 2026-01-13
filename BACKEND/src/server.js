@@ -1,7 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { Resend } from "resend";
 
 import routerAdministrador from './routers/administrador_routes.js';
 
@@ -24,23 +23,6 @@ const app = express();
 
 const FRONTEND_URL = process.env.FRONTEND_URL || process.env.URL_FRONTEND || 'http://localhost:5173';
 console.log('FRONTEND_URL:', FRONTEND_URL);
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-app.get('/test-mail', async (req, res) => {
-    try {
-        await resend.emails.send({
-            from: "Unidad Educativa <onboarding@resend.dev>",
-            to: "alissonviracocha11@gmail.com",
-            subject: "Prueba producción",
-            html: "<p>Correo funcionando en producción 🎉</p>"
-        });
-        res.send("Correo enviado correctamente");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Error enviando correo");
-    }
-});
 
 // Configurar sesiones
 app.use(cors({
