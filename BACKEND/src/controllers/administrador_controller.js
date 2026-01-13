@@ -1,7 +1,7 @@
 import Administrador from "../models/Administrador.js"
 import Docente from "../models/Docente.js"
 import Estudiante from "../models/Estudiante.js"
-import { sendMailToOwner, sendMailToRegister, sendMailToRecoveryPassword } from "../config/nodemailler.js"
+import { sendMailToOwner, sendMailToRegister, sendMailToRecoveryPassword } from "../helpers/email.js"
 import { crearTokenJWT } from "../middlewares/JWT.js"
 import mongoose from "mongoose"
 import bcrypt from "bcryptjs"

@@ -1,6 +1,7 @@
 import Docente from "../models/Docente.js"
 import Calificacion from "../models/Calificacion.js"
 import { crearTokenJWT } from "../middlewares/JWT.js"
+import { sendMailToRecoveryPassword } from "../helpers/email.js"
 import mongoose from "mongoose"
 
 
