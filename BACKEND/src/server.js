@@ -1,4 +1,4 @@
-import express from 'express';
+//import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import routerAdministrador from './routers/administrador_routes.js';
@@ -24,18 +24,18 @@ app.use(cors({
     credentials: true,
 }));
 
+/*
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'secret',
+    secret: process.env.SESSION_SECRET || 'vercel_secret',
     resave: false,
-    saveUninitialized: false,
-    /*
+    saveUninitialized: true,
     proxy: true,
     cookie: {
         secure: false,
         sameSite: 'none',
-    }*/
+    }
 }));
-
+*/
 // Middlewares 
 app.use(express.json());
 // Para poder recibir datos en formato JSON y URL-encoded
