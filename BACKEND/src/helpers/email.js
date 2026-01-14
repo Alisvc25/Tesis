@@ -11,7 +11,7 @@ const sendMailToRegister = async (userMail, token) => {
     const link = `${FRONTEND}/confirm/${token}`;
 
     await resend.emails.send({
-        from: "UEIB Tránsito Amaguaña <noreply@transitoamaguana.edu.ec>",
+        from: "UEIB Tránsito Amaguaña <onboarding@resend.dev>",
         to: userMail,
         subject: "Activación de cuenta – UEIB Tránsito Amaguaña 🎓",
         html: `
@@ -38,7 +38,7 @@ const sendMailToRecoveryPassword = async (userMail, token) => {
     const link = `${FRONTEND}/recuperar-password/${token}`;
 
     await resend.emails.send({
-        from: "UEIB Tránsito Amaguaña <noreply@transitoamaguana.edu.ec>",
+        from: "UEIB Tránsito Amaguaña <onboarding@resend.dev>",
         to: userMail,
         subject: "Restablecer contraseña – UEIB Tránsito Amaguaña 🔐",
         html: `
@@ -65,7 +65,7 @@ const sendMailToOwner = async (userMail, password) => {
     const link = `${FRONTEND}/login`;
 
     await resend.emails.send({
-        from: "UEIB Tránsito Amaguaña <noreply@transitoamaguana.edu.ec>",
+        from: "UEIB Tránsito Amaguaña <onboarding@resend.dev>",
         to: userMail,
         subject: "Credenciales de acceso – Sistema Académico 🎓",
         html: `
@@ -75,7 +75,7 @@ const sendMailToOwner = async (userMail, password) => {
         <p>Tu cuenta ha sido creada exitosamente.</p>
 
         <p><b>Usuario:</b> ${userMail}</p>
-        <p><b>Contraseña temporal:</b> ${password}</p>
+        <p><b>Contraseña:</b> ${password}</p>
 
         <a href="${link}" 
             style="display:inline-block; background:#1e3a8a; color:white; padding:12px 20px; text-decoration:none; border-radius:6px;">
