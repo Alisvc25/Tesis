@@ -1,9 +1,5 @@
 export default {
-    testEnvironment: 'node',
-    transform: {
-        '^.+\\.js$': 'babel-jest',
-    },
-    transformIgnorePatterns: [
-        '/node_modules/(?!(node-fetch|data-uri-to-buffer)/)',
-    ],
+    transform: { "^.+\\.js$": "babel-jest" },
+    testEnvironment: "node",
+    setupFilesAfterEnv: ["<rootDir>/tests/setupTests.js"],
 };

@@ -130,3 +130,9 @@ const sendMailToOwner = async (userMail, password) => {
 
 export { sendMailToRegister, sendMailToRecoveryPassword, sendMailToOwner };
 
+
+jest.mock('../../src/config/nodemailler.js', () => ({
+    sendMailToRegister: jest.fn(() => Promise.resolve(true)),
+    sendMailToOwner: jest.fn(() => Promise.resolve(true)),
+    sendMailToRecoveryPassword: jest.fn(() => Promise.resolve(true)),
+}));
