@@ -1,254 +1,75 @@
-/*
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-dotenv.config();
-
-let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: process.env.HOST_SMTP,
-    port: process.env.PORT_SMTP,
-    auth: {
-        user: process.env.USER_SMTP,
-        pass: process.env.PASS_SMTP,
-    }
-});
-
-const FROM = `UEIB Tránsito Amaguaña <${process.env.FROM_EMAIL}>`;
-
-const FRONTEND = (process.env.FRONTEND_URL || "").replace(/\/$/, "");
-
-
-export const sendMailToRegister = async (userMail, token) => {
-    const link = `${FRONTEND}/confirm/${token}`;
-
-    await transporter.sendMail({
-        from: FROM,
-        to: userMail,
-        subject: "Activación de cuenta – UEIB Tránsito Amaguaña 🎓",
-        html: `
-        <div style="font-family:Inter,Arial,sans-serif;background:#f6f8fb;padding:24px">
-            <div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-            <div style="background:#1e3a8a;padding:18px 22px;color:#fff">
-                <h2 style="margin:0;font-size:18px">Unidad Educativa Tránsito Amaguaña</h2>
-                <p style="margin:6px 0 0;opacity:.9">Activación de cuenta</p>
-            </div>
-
-            <div style="padding:22px">
-                <p style="margin:0 0 12px">Hola 👋, tu cuenta fue creada correctamente.</p>
-                <p style="margin:0 0 18px">Para activarla, haz clic en el botón:</p>
-
-                <a href="${link}"
-                style="display:inline-block;background:#1e3a8a;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:600">
-                Activar cuenta
-                </a>
-
-                <p style="margin:18px 0 0;font-size:13px;color:#6b7280">
-                Si no solicitaste esta cuenta, ignora este correo.
-                </p>
-
-                <p style="margin:14px 0 0;font-size:12px;color:#9ca3af">
-                Enlace alternativo: <span style="word-break:break-all">${link}</span>
-                </p>
-            </div>
-
-            <div style="padding:14px 22px;background:#f9fafb;border-top:1px solid #e5e7eb;font-size:12px;color:#6b7280">
-                Este mensaje fue enviado automáticamente. No responder.
-            </div>
-            </div>
-        </div>
-        `,
-    });
-};
-
-export const sendMailToRecoveryPassword = async (userMail, token) => {
-    const link = `${FRONTEND}/recuperar-password/${token}`;
-
-    await transporter.sendMail({
-        from: FROM,
-        to: userMail,
-        subject: "Restablecer contraseña – UEIB Tránsito Amaguaña 🔐",
-        html: `
-        <div style="font-family:Inter,Arial,sans-serif;background:#f6f8fb;padding:24px">
-            <div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-            <div style="background:#dc2626;padding:18px 22px;color:#fff">
-                <h2 style="margin:0;font-size:18px">Restablecer contraseña</h2>
-                <p style="margin:6px 0 0;opacity:.9">Solicitud de cambio</p>
-            </div>
-
-            <div style="padding:22px">
-                <p style="margin:0 0 12px">Recibimos una solicitud para cambiar tu contraseña.</p>
-                <p style="margin:0 0 18px">Crea una nueva contraseña aquí:</p>
-
-                <a href="${link}"
-                style="display:inline-block;background:#dc2626;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:600">
-                Crear nueva contraseña
-                </a>
-
-                <p style="margin:18px 0 0;font-size:13px;color:#6b7280">
-                Si no solicitaste esto, ignora este correo.
-                </p>
-
-                <p style="margin:14px 0 0;font-size:12px;color:#9ca3af">
-                Enlace alternativo: <span style="word-break:break-all">${link}</span>
-                </p>
-            </div>
-
-            <div style="padding:14px 22px;background:#f9fafb;border-top:1px solid #e5e7eb;font-size:12px;color:#6b7280">
-                Por seguridad, este enlace es personal.
-            </div>
-            </div>
-        </div>
-        `,
-    });
-};
-
-export const sendMailToOwner = async (userMail, password) => {
-    const link = `${FRONTEND}/login`;
-
-    await transporter.sendMail({
-        from: FROM,
-        to: userMail,
-        subject: "Credenciales de acceso – Sistema Académico 🎓",
-        html: `
-        <div style="font-family:Inter,Arial,sans-serif;background:#f6f8fb;padding:24px">
-            <div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-            <div style="background:#1e3a8a;padding:18px 22px;color:#fff">
-                <h2 style="margin:0;font-size:18px">Sistema Académico</h2>
-                <p style="margin:6px 0 0;opacity:.9">Credenciales de acceso</p>
-            </div>
-
-            <div style="padding:22px">
-                <p style="margin:0 0 12px">Tu cuenta ha sido creada exitosamente.</p>
-
-                <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px">
-                <p style="margin:0 0 8px"><b>Usuario:</b> ${userMail}</p>
-                <p style="margin:0"><b>Contraseña:</b> ${password}</p>
-                </div>
-
-                <a href="${link}"
-                style="display:inline-block;margin-top:16px;background:#1e3a8a;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:600">
-                Iniciar sesión
-                </a>
-
-                <p style="margin:18px 0 0;font-size:13px;color:#6b7280">
-                Por seguridad, cambia tu contraseña después de iniciar sesión.
-                </p>
-            </div>
-
-            <div style="padding:14px 22px;background:#f9fafb;border-top:1px solid #e5e7eb;font-size:12px;color:#6b7280">
-                No responder este correo.
-            </div>
-            </div>
-        </div>
-        `,
-    });
-};
-*/
-/*
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-const FRONTEND = process.env.FRONTEND_URL;
-const FROM = process.env.FROM_EMAIL || "onboarding@resend.dev";
-
-export const sendMailToOwner = async (userMail, password) => {
-    const link = `${FRONTEND}/login`;
-
-    return await resend.emails.send({
-        from: `UEIB Tránsito Amaguaña <${FROM}>`,
-        to: userMail,
-        subject: "Credenciales de acceso – Sistema Académico 🎓",
-        html: `
-        <div style="font-family:Inter,Arial,sans-serif;background:#f6f8fb;padding:24px">
-            <div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-            <div style="background:#1e3a8a;padding:18px 22px;color:#fff">
-                <h2 style="margin:0;font-size:18px">Sistema Académico</h2>
-                <p style="margin:6px 0 0;opacity:.9">Credenciales</p>
-            </div>
-            <div style="padding:22px">
-                <p style="margin:0 0 12px">Tu cuenta fue creada exitosamente.</p>
-                <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px">
-                <p style="margin:0 0 8px"><b>Usuario:</b> ${userMail}</p>
-                <p style="margin:0"><b>Contraseña:</b> ${password}</p>
-                </div>
-                <a href="${link}" style="display:inline-block;margin-top:16px;background:#1e3a8a;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:600">
-                Iniciar sesión
-                </a>
-            </div>
-            </div>
-        </div>
-    `,
-    });
-};
-
-export const sendMailToRecoveryPassword = async (userMail, token) => {
-    const link = `${FRONTEND}/recuperar-password/${token}`;
-
-    return await resend.emails.send({
-        from: `UEIB Tránsito Amaguaña <${FROM}>`,
-        to: userMail,
-        subject: "Restablecer contraseña – UEIB Tránsito Amaguaña 🔐",
-        html: `
-        <div style="font-family:Inter,Arial,sans-serif;background:#f6f8fb;padding:24px">
-            <div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-            <div style="background:#dc2626;padding:18px 22px;color:#fff">
-                <h2 style="margin:0;font-size:18px">Restablecer contraseña</h2>
-            </div>
-            <div style="padding:22px">
-                <p style="margin:0 0 12px">Haz clic para crear una nueva contraseña:</p>
-                <a href="${link}" style="display:inline-block;background:#dc2626;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:600">
-                Crear nueva contraseña
-                </a>
-                <p style="margin:14px 0 0;font-size:12px;color:#9ca3af">
-                Enlace alternativo: <span style="word-break:break-all">${link}</span>
-                </p>
-            </div>
-            </div>
-        </div>
-    `,
-    });
-};
-
-export const sendMailToRegister = async (userMail, token) => {
-    const link = `${FRONTEND}/confirm/${token}`;
-
-    return await resend.emails.send({
-        from: `UEIB Tránsito Amaguaña <${FROM}>`,
-        to: userMail,
-        subject: "Activación de cuenta – UEIB Tránsito Amaguaña 🎓",
-        html: `
-        <div style="font-family:Inter,Arial,sans-serif;background:#f6f8fb;padding:24px">
-            <div style="max-width:560px;margin:auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-            <div style="background:#1e3a8a;padding:18px 22px;color:#fff">
-                <h2 style="margin:0;font-size:18px">Activación de cuenta</h2>
-            </div>
-            <div style="padding:22px">
-                <p style="margin:0 0 12px">Activa tu cuenta aquí:</p>
-                <a href="${link}" style="display:inline-block;background:#1e3a8a;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:600">
-                Activar cuenta
-                </a>
-                <p style="margin:14px 0 0;font-size:12px;color:#9ca3af">
-                Enlace alternativo: <span style="word-break:break-all">${link}</span>
-                </p>
-            </div>
-            </div>
-        </div>
-    `,
-    });
-};
-*/
 import { Resend } from "resend";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log("Resend key", process.env.RESEND_API_KEY),
+console.log("Resend key", process.env.RESEND_API_KEY);
 console.log("Frontend URL", process.env.FRONTEND_URL);
 
-
 const resend = new Resend(process.env.RESEND_API_KEY);
-
 const FRONTEND = process.env.FRONTEND_URL;
+
+const baseEmail = ({ title, subtitle, badgeText, accentColor, buttonText, buttonLink, bodyHtml, footerNote }) => `
+    <div style="margin:0; padding:0; background:#f3f6fb;">
+        <div style="max-width:620px; margin:0 auto; padding:24px 14px;">
+        
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg, ${accentColor} 0%, #0b1220 100%); border-radius:18px; padding:18px 18px; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.12);">
+            <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:46px; height:46px; border-radius:14px; background:rgba(255,255,255,.16); display:flex; align-items:center; justify-content:center; font-size:22px;">
+                🎓
+            </div>
+            <div style="line-height:1.2;">
+                <div style="font-size:18px; font-weight:800; letter-spacing:.2px;">UEIB Tránsito Amaguaña</div>
+                <div style="font-size:13px; opacity:.9;">Sistema Académico • Comunicación oficial</div>
+            </div>
+            </div>
+
+            <div style="margin-top:14px;">
+            <span style="display:inline-block; font-size:12px; font-weight:700; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.16);">
+                ${badgeText}
+            </span>
+            </div>
+
+            <h1 style="margin:12px 0 4px; font-size:24px; line-height:1.25; font-weight:900;">
+            ${title}
+            </h1>
+            <p style="margin:0; font-size:14px; opacity:.92;">
+            ${subtitle}
+            </p>
+        </div>
+
+        <!-- Card -->
+        <div style="background:#ffffff; border-radius:18px; padding:18px; margin-top:14px; box-shadow:0 10px 26px rgba(15,23,42,.08); border:1px solid #e8eefc;">
+            
+            ${bodyHtml}
+
+            <div style="margin-top:18px; text-align:center;">
+            <a href="${buttonLink}"
+                style="display:inline-block; background:${accentColor}; color:#fff; font-weight:800; font-size:15px; padding:14px 18px; text-decoration:none; border-radius:12px; box-shadow:0 10px 18px rgba(2,6,23,.16);">
+                ${buttonText} ✅
+            </a>
+            <div style="margin-top:10px; font-size:12.5px; color:#64748b;">
+                Si no solicitaste este correo, puedes ignorarlo con tranquilidad.
+            </div>
+            </div>
+
+            <div style="margin-top:18px; padding:14px; border-radius:14px; background:#f8fafc; border:1px dashed #dbeafe;">
+            <div style="font-size:13.5px; color:#0f172a; font-weight:800; margin-bottom:6px;">💡 Consejo rápido</div>
+            <div style="font-size:13px; color:#334155; line-height:1.6;">
+                ${footerNote}
+            </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align:center; margin-top:14px; color:#64748b; font-size:12px; line-height:1.6;">
+            <div>Este mensaje fue enviado automáticamente. Por favor, no respondas a este correo.</div>
+            <div style="margin-top:4px; opacity:.9;">© ${new Date().getFullYear()} UEIB Tránsito Amaguaña</div>
+        </div>
+        </div>
+    </div>
+`;
 
 const sendMailToRegister = async (userMail, token) => {
     const link = `${FRONTEND}/confirm/${token}`;
@@ -257,23 +78,33 @@ const sendMailToRegister = async (userMail, token) => {
         from: "UEIB Tránsito Amaguaña <onboarding@resend.dev>",
         to: userMail,
         subject: "Activación de cuenta – UEIB Tránsito Amaguaña 🎓",
-        html: `
-    <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2>Bienvenido a la Unidad Educativa Tránsito Amaguaña 🎓</h2>
-            <p>Hemos creado tu cuenta correctamente.</p>
-            <p>Para activarla, haz clic en el siguiente botón:</p>
+        html: baseEmail({
+            title: "¡Bienvenida/o al Sistema Académico! 🎉",
+            subtitle: "Tu cuenta ya está lista. Solo falta activarla para comenzar.",
+            badgeText: "Activación de cuenta",
+            accentColor: "#1e3a8a",
+            buttonText: "Activar mi cuenta",
+            buttonLink: link,
+            bodyHtml: `
+            <div style="font-size:14.5px; color:#0f172a; line-height:1.75;">
+            <p style="margin:0 0 10px;">
+                Hola 👋, nos alegra tenerte en la <b>Unidad Educativa Intercultural Bilingüe “Tránsito Amaguaña”</b>.
+            </p>
+            <p style="margin:0 0 10px;">
+                Desde aquí podrás acceder a información académica, procesos institucionales y herramientas educativas.
+            </p>
 
-        <a href="${link}" 
-            style="display:inline-block; background:#1e3a8a; color:white; padding:12px 20px; text-decoration:none; border-radius:6px;">
-            Activar cuenta
-        </a>
-
-        <p style="margin-top:20px;">Si no solicitaste esta cuenta, puedes ignorar este correo.</p>
-
-        <hr>
-        <small>Este mensaje fue enviado automáticamente. No responder.</small>
-    </div>
-    `
+            <div style="margin:14px 0; padding:14px; border-radius:14px; background:#eff6ff; border:1px solid #dbeafe;">
+                <div style="font-weight:900; color:#1e3a8a; margin-bottom:6px;">📌 Importante</div>
+                <div style="color:#0f172a;">
+                Para activar tu cuenta, presiona el botón de abajo. Esto confirma que el correo te pertenece.
+                </div>
+            </div>
+            </div>
+        `,
+            footerNote:
+                "Guarda este correo por si necesitas volver a activar tu cuenta. Si tu enlace expirara por seguridad, solicita uno nuevo desde el sistema."
+        })
     });
 };
 
@@ -284,23 +115,34 @@ const sendMailToRecoveryPassword = async (userMail, token) => {
         from: "UEIB Tránsito Amaguaña <onboarding@resend.dev>",
         to: userMail,
         subject: "Restablecer contraseña – UEIB Tránsito Amaguaña 🔐",
-        html: `
-    <div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2>Solicitud de cambio de contraseña</h2>
-        <p>Hemos recibido una solicitud para cambiar tu contraseña.</p>
-        <p>Haz clic en el siguiente botón para crear una nueva contraseña:</p>
+        html: baseEmail({
+            title: "Restablecimiento de contraseña 🔐",
+            subtitle: "Recibimos una solicitud para crear una nueva contraseña de tu cuenta.",
+            badgeText: "Seguridad de cuenta",
+            accentColor: "#2563eb", 
+            buttonText: "Crear nueva contraseña",
+            buttonLink: link,
+            bodyHtml: `
+            <div style="font-size:14.5px; color:#0f172a; line-height:1.75;">
+            <p style="margin:0 0 10px;">
+                Hola 👋, si solicitaste cambiar tu contraseña, puedes hacerlo de forma segura aquí.
+            </p>
 
-        <a href="${link}" 
-            style="display:inline-block; background:#dc2626; color:white; padding:12px 20px; text-decoration:none; border-radius:6px;">
-            Crear nueva contraseña
-        </a>
+            <div style="margin:14px 0; padding:14px; border-radius:14px; background:#eef2ff; border:1px solid #c7d2fe;">
+                <div style="font-weight:900; color:#1d4ed8; margin-bottom:6px;">🛡️ Seguridad</div>
+                <div style="color:#0f172a;">
+                Este enlace es personal y expira por seguridad. Si no fuiste tú, ignora este correo.
+                </div>
+            </div>
 
-        <p style="margin-top:20px;">Si no solicitaste este cambio, ignora este correo.</p>
-
-        <hr>
-        <small>Este enlace es personal y expira por seguridad.</small>
-    </div>
-    `
+            <p style="margin:0;">
+                Te recomendamos usar una contraseña con letras, números y un símbolo (por ejemplo: <b>!</b> o <b>#</b>).
+            </p>
+            </div>
+        `,
+            footerNote:
+                "Después de cambiar tu contraseña, intenta no compartirla. Si sospechas actividad extraña, cambia tu contraseña nuevamente y avisa a la institución."
+        })
     });
 };
 
@@ -311,23 +153,43 @@ const sendMailToOwner = async (userMail, password) => {
         from: "UEIB Tránsito Amaguaña <onboarding@resend.dev>",
         to: userMail,
         subject: "Credenciales de acceso – Sistema Académico 🎓",
-        html: `
-    <div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2>Acceso al Sistema Académico</h2>
+        html: baseEmail({
+            title: "Tus credenciales de acceso ✅",
+            subtitle: "Ya puedes ingresar al Sistema Académico con los datos asignados.",
+            badgeText: "Acceso al sistema",
+            accentColor: "#0f766e", // Verde elegante
+            buttonText: "Iniciar sesión",
+            buttonLink: link,
+            bodyHtml: `
+            <div style="font-size:14.5px; color:#0f172a; line-height:1.75;">
+            <p style="margin:0 0 12px;">
+                Hola 👋, tu cuenta fue creada exitosamente. Aquí están tus credenciales:
+            </p>
 
-        <p>Tu cuenta ha sido creada exitosamente.</p>
+            <div style="margin:14px 0; padding:14px; border-radius:14px; background:#ecfeff; border:1px solid #a5f3fc;">
+                <div style="display:flex; gap:10px; align-items:flex-start;">
+                <div style="font-size:18px;">📚</div>
+                <div style="flex:1;">
+                    <div style="font-weight:900; color:#0f766e; margin-bottom:6px;">Datos de acceso</div>
+                    <div style="font-size:14px; color:#0f172a;">
+                    <div style="margin-bottom:6px;"><b>Usuario:</b> ${userMail}</div>
+                    <div><b>Contraseña:</b> ${password}</div>
+                    </div>
+                </div>
+                </div>
+            </div>
 
-        <p><b>Usuario:</b> ${userMail}</p>
-        <p><b>Contraseña:</b> ${password}</p>
-
-        <a href="${link}" 
-            style="display:inline-block; background:#1e3a8a; color:white; padding:12px 20px; text-decoration:none; border-radius:6px;">
-            Iniciar sesión
-        </a>
-
-        <p style="margin-top:20px;">Por seguridad, cambia tu contraseña después de iniciar sesión.</p>
-    </div>
-    `
+            <div style="margin-top:10px; padding:12px; border-radius:14px; background:#f8fafc; border:1px solid #e2e8f0;">
+                <div style="font-weight:900; margin-bottom:6px;">✅ Recomendación</div>
+                <div style="color:#334155; font-size:13.5px;">
+                Por seguridad, cambia tu contraseña después del primer ingreso.
+                </div>
+            </div>
+            </div>
+        `,
+            footerNote:
+                "Si eres administrador/a, procura crear contraseñas únicas para cada usuario y mantener la información protegida."
+        })
     });
 };
 
