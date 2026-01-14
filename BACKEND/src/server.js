@@ -2,7 +2,6 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import session from 'express-session';
-import { verifyMailer } from './config/nodemailler.js';
 
 import routerAdministrador from './routers/administrador_routes.js';
 import routerEstudiante from './routers/estudiante_routes.js';
@@ -16,8 +15,6 @@ const app = express();
 
 const FRONTEND_URL = process.env.FRONTEND_URL || process.env.URL_FRONTEND || 'http://localhost:5173';
 console.log('FRONTEND_URL:', FRONTEND_URL);
-
-verifyMailer();
 
 // Configurar sesiones
 app.use(cors({
