@@ -26,8 +26,7 @@ const sendMailToRegister = async (userMail, token) => {
             Activar cuenta
         </a>
 
-        <p style="margin-top:20px;">Si no solicitaste esta cuenta, puedes ignorar este correo.</p>
-
+        <p style="margin-top:20px;">Si no solicitaste esta cuenta, puedes ignorar este correo.</
         <hr>
         <small>Este mensaje fue enviado automáticamente. No responder.</small>
     </div>
