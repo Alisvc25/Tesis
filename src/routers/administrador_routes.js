@@ -1,6 +1,6 @@
 import e, {Router} from 'express'
-import {comprobarTokenPasword, confirmarMail, login, recuperarPassword, registro, 
-    registrarDocente, listarDocentes, visualizarDocente, actualizarDocente, eliminarDocente,
+import {comprobarTokenPasword, confirmarMail, login, recuperarPassword, crearNuevoPassword,
+    registro, registrarDocente, listarDocentes, visualizarDocente, actualizarDocente, eliminarDocente,
     registrarEstudiante, listarEstudiantes, visualizarEstudiante, 
     actualizarEstudiante, eliminarEstudiante } from '../controllers/administrador_controller.js'
 import { verificarTokenJWT } from '../middlewares/JWT.js'
@@ -12,6 +12,8 @@ router.get('/confirmar/:token',confirmarMail)
 
 router.post('/recuperarpassword',recuperarPassword)
 router.get('/recuperarpassword/:token',comprobarTokenPasword)
+router.post('/recuperarpassword/:token',crearNuevoPassword)
+
 
 router.post('/login',login)
 

@@ -1,7 +1,7 @@
 import Administrador from "../models/Administrador.js"
 import Docente from "../models/Docente.js"
 import Estudiante from "../models/Estudiante.js"
-import { sendMailToOwner, sendMailToRegister, sendMailToRecoveryPassword } from "../helpers/email.js"
+import { sendMailToOwner, sendMailToRegister, sendMailToRecoveryPassword } from "../config/nodemailler.js"
 import { crearTokenJWT } from "../middlewares/JWT.js"
 import mongoose from "mongoose"
 import bcrypt from "bcryptjs"
@@ -20,16 +20,18 @@ const registro = async (req, res) => {
     nuevoAdministrador.password = await nuevoAdministrador.encrypPassword(password)
 
     const token = nuevoAdministrador.crearToken()
-    await sendMailToRegister(email, token)
 
     await nuevoAdministrador.save()
+
+    await sendMailToRegister(email, token)
+
+
     //4
     res.status(200).json({ msg: "Revisa tu correo electrónico para confirmar tu cuenta" })
 }
 
 const registrarDocente = async (req, res) => {
-    const { nombre, apellido, direccion, cedula, celular,
-        email, materias } = req.body;
+    const { nombre, apellido, direccion, cedula, celular, email, materias } = req.body;
 
     if (Object.values(req.body).includes(""))
         return res.status(400).json({ msg: "Lo sentimos, debes llenar todos los campos" });
@@ -51,22 +53,16 @@ const registrarDocente = async (req, res) => {
         materias,
         password: passwordEncriptado,
         rol: "docente",
-        confirmEmail: true
+        confirmEmail: true,
     });
 
-    const saved = await nuevoDocente.save();
+    await nuevoDocente.save();
 
-    res.status(201).json({ msg: "Docente registrado correctamente. Revise su correo electrónico." });
+    await sendMailToOwner(email, passwordGenerada);
 
-    (async () => {
-        try {
-            await sendMailToOwner(email, passwordGenerada);
-            console.log(`Email enviado a ${email}`);
-        } catch (mailErr) {
-            console.error(`Error enviando email a ${email}:`, mailErr);
-        }
-    })();
+    return res.status(201).json({ msg: "Docente registrado correctamente. Revise su correo electrónico." });
 };
+
 
 const listarDocentes = async (req, res) => {
     const docentes = await Docente.find().select("-password -token -__v -createdAt -updatedAt");
@@ -112,8 +108,7 @@ const eliminarDocente = async (req, res) => {
 }
 
 const registrarEstudiante = async (req, res) => {
-    const { nombre, apellido, cedula, fechaNacimiento, nacionalidad, cultura, direccion,
-        celular, email, curso } = req.body;
+    const { nombre, apellido, cedula, fechaNacimiento, nacionalidad, cultura, direccion, celular, email, curso } = req.body;
 
     if (Object.values(req.body).includes(""))
         return res.status(400).json({ msg: "Lo sentimos, debes completar todos los campos" });
@@ -138,21 +133,14 @@ const registrarEstudiante = async (req, res) => {
         curso,
         password: passwordEncriptado,
         rol: "estudiante",
-        confirmEmail: true
+        confirmEmail: true,
     });
 
-    const saved = await nuevoEstudiante.save();
+    await nuevoEstudiante.save();
 
-    res.status(201).json({ msg: "Estudiante registrado correctamente. Revise su correo electrónico." });
+    await sendMailToOwner(email, passwordGenerada);
 
-    (async () => {
-        try {
-            await sendMailToOwner(email, passwordGenerada);
-            console.log(`Email enviado a ${email}`);
-        } catch (mailErr) {
-            console.error(`Error enviando email a ${email}:`, mailErr);
-        }
-    })();
+    return res.status(201).json({ msg: "Estudiante registrado correctamente. Revise su correo electrónico." });
 };
 
 const listarEstudiantes = async (req, res) => {
@@ -220,8 +208,10 @@ const recuperarPassword = async (req, res) => {
 
     const token = administradorBDD.crearToken()
     administradorBDD.token = token
-    await sendMailToRecoveryPassword(email, token)
+
     await administradorBDD.save()
+
+    await sendMailToRecoveryPassword(email, token)
 
     res.status(200).json({ msg: "Revisa tu correo electrónico para reestablecer tu cuenta" })
 }
@@ -229,10 +219,39 @@ const recuperarPassword = async (req, res) => {
 const comprobarTokenPasword = async (req, res) => {
     const { token } = req.params
     const administradorBDD = await Administrador.findOne({ token })
-    if (administradorBDD?.token !== req.params.token) return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" })
+
+    if (administradorBDD?.token !== req.params.token)
+        return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" })
+
     await administradorBDD.save()
+
     res.status(200).json({ msg: "Token confirmado, ya puedes crear tu nuevo password" })
 }
+
+const crearNuevoPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password, confirmpassword } = req.body;
+
+    if (!password || !confirmpassword) {
+        return res.status(400).json({ msg: "Debes llenar todos los campos" });
+    }
+
+    if (password !== confirmpassword) {
+        return res.status(400).json({ msg: "Los passwords no coinciden" });
+    }
+
+    const administradorBDD = await Administrador.findOne({ token });
+    if (!administradorBDD || !administradorBDD.token) {
+        return res.status(404).json({ msg: "Token inválido o ya utilizado" });
+    }
+
+    administradorBDD.password = await administradorBDD.encrypPassword(password);
+    administradorBDD.token = null;
+    await administradorBDD.save();
+
+    return res.status(200).json({ msg: "Password actualizado correctamente" });
+};
+
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -271,6 +290,7 @@ export {
     confirmarMail,
     recuperarPassword,
     comprobarTokenPasword,
+    crearNuevoPassword,
     login,
     registrarDocente,
     listarDocentes,

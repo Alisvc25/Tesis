@@ -1,7 +1,7 @@
 import Docente from "../models/Docente.js"
 import Calificacion from "../models/Calificacion.js"
 import { crearTokenJWT } from "../middlewares/JWT.js"
-import { sendMailToRecoveryPassword } from "../helpers/email.js"
+import { sendMailToRecoveryPassword } from "../config/nodemailler.js"
 import mongoose from "mongoose"
 
 
@@ -46,8 +46,10 @@ const recuperarPassword = async (req, res) => {
 
     const token = docenteBDD.crearToken()
     docenteBDD.token = token
-    await sendMailToRecoveryPassword(email, token)
+    
     await docenteBDD.save()
+    
+    await sendMailToRecoveryPassword(email, token)
 
     res.status(200).json({ msg: "Revisa tu correo electrónico para reestablecer tu cuenta" })
 }
@@ -59,6 +61,30 @@ const comprobarTokenPasword = async (req, res) => {
     await docenteBDD.save()
     res.status(200).json({ msg: "Token confirmado, ya puedes crear tu nuevo password" })
 }
+
+const crearNuevoPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password, confirmpassword } = req.body;
+
+    if (!password || !confirmpassword) {
+        return res.status(400).json({ msg: "Debes llenar todos los campos" });
+    }
+
+    if (password !== confirmpassword) {
+        return res.status(400).json({ msg: "Los passwords no coinciden" });
+    }
+
+    const docenteBDD = await Docente.findOne({ token });
+    if (!docenteBDD || !docenteBDD.token) {
+        return res.status(404).json({ msg: "Token inválido o ya utilizado" });
+    }
+
+    docenteBDD.password = await docenteBDD.encrypPassword(password);
+    docenteBDD.token = null;
+    await docenteBDD.save();
+
+    return res.status(200).json({ msg: "Password actualizado correctamente" });
+};
 
 const crearCalificacion = async (req, res) => {
     try {
@@ -154,6 +180,7 @@ export {
     perfil,
     recuperarPassword,
     comprobarTokenPasword,
+    crearNuevoPassword,
     crearCalificacion,
     actualizarCalificacion,
     eliminarCalificaciones,

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { loginDocente, perfil, recuperarPassword, eliminarCalificaciones, comprobarTokenPasword,
-    crearCalificacion, actualizarCalificacion, listarCalificaciones } from '../controllers/docentes_controller.js'
+    crearCalificacion, actualizarCalificacion, listarCalificaciones, crearNuevoPassword } from '../controllers/docentes_controller.js'
 
 import { verificarTokenJWT } from '../middlewares/JWT.js'
 
@@ -11,6 +11,7 @@ router.post("/login", loginDocente);
 router.get("/perfil", verificarTokenJWT, perfil);
 router.put("/recuperarpassword", recuperarPassword);
 router.get('/recuperarpassword/:token',comprobarTokenPasword)
+router.post('/recuperarpassword/:token',crearNuevoPassword)
 
 
 router.post("/calificacion", verificarTokenJWT, crearCalificacion);

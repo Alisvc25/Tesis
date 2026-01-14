@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken"
-import { OAuth2Client } from "google-auth-library"
 import Administrador from "../models/Administrador.js"
 import Estudiante from "../models/Estudiante.js"
 import Docente from "../models/Docente.js"

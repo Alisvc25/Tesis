@@ -14,31 +14,12 @@ import routerCalificacion from './routers/calificacion_routes.js';
 import session from 'express-session';
 
 dotenv.config();
-console.log('SESSION_SECRET:', process.env.SESSION_SECRET);
-
 
 // Inicializaciones
 const app = express();
 
 const FRONTEND_URL = process.env.FRONTEND_URL || process.env.URL_FRONTEND || 'http://localhost:5173';
 console.log('FRONTEND_URL:', FRONTEND_URL);
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-app.get('/test-mail', async (req, res) => {
-    try {
-        await resend.emails.send({
-            from: "Unidad Educativa <onboarding@resend.dev>",
-            to: "alissonviracocha11@gmail.com",
-            subject: "Prueba producción",
-            html: "<p>Correo funcionando en producción 🎉</p>"
-        });
-        res.send("Correo enviado correctamente");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Error enviando correo");
-    }
-});
 
 // Configurar sesiones
 app.use(cors({
