@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
-  "description": "",
+  "description": "Elaboración de un backend de gestión académica para la UEIBTA",
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
